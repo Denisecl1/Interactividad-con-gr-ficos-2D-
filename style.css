@@ -1,0 +1,42 @@
+/* Estilos generales para el cuerpo */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Contenedor del Canvas */
+#canvasColisiones {
+    background-color: white;
+    border: 5px solid #212529;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    /* OPCIÓN 1: Mira de precisión personalizada */
+    cursor: url('https://cur.cursors-4u.net/games/gam-4/gam373.cur'), crosshair;
+    transition: all 0.5s ease; /* Para que el cambio a dorado sea suave */
+}
+
+/* Clase especial para el NIVEL 10 (Dorado) */
+.nivel-final {
+    border-color: #d4af37 !important; /* Color Oro */
+    box-shadow: 0 0 30px #ffd700 !important;
+    /* Cambiamos a una mira dorada en el nivel final */
+    cursor: url('https://cur.cursors-4u.net/games/gam-13/gam1210.cur'), pointer !important;
+}
+
+/* Estilo para el botón de Siguiente Nivel */
+#btnSiguienteNivel {
+    padding: 20px 40px;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 50px;
+    transition: transform 0.2s;
+}
+
+#btnSiguienteNivel:hover {
+    transform: scale(1.1);
+}
+
+/* Estilo para los textos informativos */
+.text-secondary {
+    font-weight: 500;
+}
