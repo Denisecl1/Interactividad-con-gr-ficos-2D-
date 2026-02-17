@@ -1,3 +1,8 @@
+/**
+ * Proyecto: Simulación de Colisiones 2D - ARCADE MODE
+ * Autora: Diana Denise Campos Lozano
+ */
+
 const canvas = document.getElementById("canvasColisiones");
 const ctx = canvas.getContext("2d");
 const contenedorBoton = document.getElementById("contenedorBotonNext");
@@ -22,9 +27,11 @@ class Pelota {
         this.radio = 20;
         this.x = Math.random() * (canvas.width - this.radio * 2) + this.radio;
         this.y = canvas.height + this.radio;
-        this.vx = (Math.random() - 0.5) * 4; 
+        this.vx = (Math.random() - 0.5) * 6; 
         this.vy = -(Math.random() * 1.5 + (nivelActual * 1.2)); 
-        this.colorOriginal = (nivelActual === 10) ? "#d4af37" : "#3498db";
+        
+        // Colores Neón: Cian para niveles normales, Dorado para el nivel 10
+        this.colorOriginal = (nivelActual === 10) ? "#d4af37" : "#00f2ff";
         this.color = this.colorOriginal;
         this.opacity = 1;
         this.estaDesapareciendo = false;
@@ -34,30 +41,50 @@ class Pelota {
     dibujar() {
         ctx.save();
         ctx.globalAlpha = this.opacity;
+        
+        // Efecto de resplandor neón en la bolita
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = this.color;
+
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radio, 0, Math.PI * 2);
         ctx.fillStyle = this.color;
         ctx.fill();
+        
+        // Borde brillante
         ctx.strokeStyle = "white";
+        ctx.lineWidth = 2;
         ctx.stroke();
         ctx.closePath();
+
+        // Número de la bolita
         ctx.fillStyle = "white";
-        ctx.font = "bold 14px Arial";
+        ctx.shadowBlur = 0; // Quitar sombra para el texto
+        ctx.font = "bold 14px 'Courier New'";
         ctx.textAlign = "center";
         ctx.fillText(this.numero, this.x, this.y + 5);
+        
         ctx.restore();
     }
 
     actualizar() {
         this.x += this.vx;
         this.y += this.vy;
+
+        // Rebote en paredes laterales
+        if (this.x + this.radio > canvas.width || this.x - this.radio < 0) {
+            this.vx *= -1;
+        }
+
+        // Cambio de color al detectar mouse (mouseX, mouseY)
         const dx = mouseX - this.x;
         const dy = mouseY - this.y;
         if (Math.sqrt(dx*dx + dy*dy) < this.radio) {
-            this.color = "#f1c40f"; 
+            this.color = "#ff007a"; // Cambia a rosa neón al pasar el mouse
         } else {
             this.color = this.colorOriginal;
         }
+
         if (this.estaDesapareciendo) {
             this.opacity -= 0.05;
             if (this.opacity <= 0) this.marcadaParaEliminar = true;
@@ -66,7 +93,6 @@ class Pelota {
     }
 }
 
-// LÓGICA DE COLISIÓN MEJORADA
 function detectarColisiones() {
     for (let i = 0; i < pelotas.length; i++) {
         for (let j = i + 1; j < pelotas.length; j++) {
@@ -78,18 +104,15 @@ function detectarColisiones() {
             let distanciaMinima = p1.radio + p2.radio;
 
             if (distancia < distanciaMinima) {
-                // 1. SEPARACIÓN FÍSICA (Para que no se peguen)
                 let superposicion = distanciaMinima - distancia;
-                let nx = dx / distancia; // Vector normal X
-                let ny = dy / distancia; // Vector normal Y
+                let nx = dx / distancia;
+                let ny = dy / distancia;
                 
-                // Las movemos la mitad de la superposición a cada una
                 p1.x -= nx * (superposicion / 2);
                 p1.y -= ny * (superposicion / 2);
                 p2.x += nx * (superposicion / 2);
                 p2.y += ny * (superposicion / 2);
 
-                // 2. REBOTE (Intercambio de velocidad)
                 [p1.vx, p2.vx] = [p2.vx, p1.vx];
                 [p1.vy, p2.vy] = [p2.vy, p1.vy];
             }
@@ -102,7 +125,9 @@ function iniciarNivel(n) {
     pausadoParaSiguienteNivel = false;
     bolitasFinalizadasNivel = 0;
     pelotas = [];
+    
     if (n === 10) canvas.classList.add("nivel-final");
+
     for (let i = 1; i <= BOLITAS_POR_NIVEL; i++) {
         setTimeout(() => {
             let numReal = ((n - 1) * BOLITAS_POR_NIVEL) + i;
@@ -137,6 +162,12 @@ btnNext.onclick = function() {
 
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // ACTUALIZACIÓN DE PANELES HTML (Mejora de Interfaz)
+    document.getElementById("val-nivel").innerText = `${nivel} / 10`;
+    document.getElementById("val-eliminados").innerText = `${eliminadosPorUsuario} / 100`;
+    document.getElementById("val-progreso").innerText = `${((eliminadosPorUsuario / 100) * 100).toFixed(0)} %`;
+
     if (!pausadoParaSiguienteNivel) {
         detectarColisiones();
         for (let i = pelotas.length - 1; i >= 0; i--) {
@@ -155,21 +186,21 @@ function animate() {
             }
         }
     } else {
-        ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+        // Pantalla de pausa oscura tipo arcade
+        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    ctx.fillStyle = (nivel === 10) ? "#d4af37" : "black";
-    ctx.font = "bold 18px Consolas";
-    ctx.fillText(`NIVEL: ${nivel}/10`, 15, 30);
-    ctx.fillText(`ELIMINADAS: ${eliminadosPorUsuario}`, 15, 55);
-    ctx.fillText(`PROGRESO: ${((eliminadosPorUsuario / 100) * 100).toFixed(0)}%`, 15, 80);
-
+    // Mensaje de fin de juego con estilo neón
     if (nivel === 10 && bolitasFinalizadasNivel === 10) {
-        ctx.fillStyle = "#d4af37";
-        ctx.font = "bold 45px Arial";
+        ctx.save();
+        ctx.fillStyle = "#ff007a";
+        ctx.font = "bold 40px 'Courier New'";
         ctx.textAlign = "center";
-        ctx.fillText("¡JUEGO TERMINADO!", canvas.width/2, canvas.height/2);
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = "#ff007a";
+        ctx.fillText("¡SISTEMA COMPLETADO!", canvas.width/2, canvas.height/2);
+        ctx.restore();
         return;
     }
     requestAnimationFrame(animate);

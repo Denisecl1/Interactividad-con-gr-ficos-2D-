@@ -1,42 +1,102 @@
-/* Estilos generales para el cuerpo */
+/* =========================================
+   PROYECTO: Arcade Mode Futurista
+   AUTORA: Diana Denise Campos Lozano
+   ========================================= */
+
 body {
-    background-color: #f8f9fa;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0b0e14; /* Fondo oscuro profundo */
+    color: #00f2ff;
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
 }
 
-/* Contenedor del Canvas */
-#canvasColisiones {
-    background-color: white;
-    border: 5px solid #212529;
-    border-radius: 15px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-    /* OPCIÓN 1: Mira de precisión personalizada */
-    cursor: url('https://cur.cursors-4u.net/games/gam-4/gam373.cur'), crosshair;
-    transition: all 0.5s ease; /* Para que el cambio a dorado sea suave */
-}
-
-/* Clase especial para el NIVEL 10 (Dorado) */
-.nivel-final {
-    border-color: #d4af37 !important; /* Color Oro */
-    box-shadow: 0 0 30px #ffd700 !important;
-    /* Cambiamos a una mira dorada en el nivel final */
-    cursor: url('https://cur.cursors-4u.net/games/gam-13/gam1210.cur'), pointer !important;
-}
-
-/* Estilo para el botón de Siguiente Nivel */
-#btnSiguienteNivel {
-    padding: 20px 40px;
-    font-size: 24px;
+h1 {
+    color: #ff007a;
     font-weight: bold;
-    border-radius: 50px;
-    transition: transform 0.2s;
+    letter-spacing: 5px;
+    text-shadow: 0 0 15px #ff007a;
+    margin-bottom: 20px;
+}
+
+/* Paneles de estadísticas superiores */
+.stat-panel {
+    background: rgba(0, 242, 255, 0.05);
+    border: 2px solid #00f2ff;
+    border-radius: 10px;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+}
+
+.canvas-wrapper {
+    position: relative;
+    display: inline-block;
+    border-radius: 25px;
+    padding: 10px;
+    background: #0b0e14;
+}
+
+/* ESTILO DEL CANVAS */
+#canvasColisiones {
+    background-color: #050505;
+    border: 4px solid #00f2ff;
+    border-radius: 20px;
+    box-shadow: 0 0 25px rgba(0, 242, 255, 0.5), inset 0 0 15px rgba(0, 242, 255, 0.2);
+    cursor: url('https://cur.cursors-4u.net/games/gam-4/gam373.cur'), crosshair;
+    display: block;
+}
+
+/* BOTÓN SIGUIENTE NIVEL FLOTANTE */
+#contenedorBotonNext {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+#btnSiguienteNivel {
+    background: #050505;
+    color: #ff007a;
+    border: 3px solid #ff007a;
+    padding: 20px 40px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 15px;
+    box-shadow: 0 0 20px #ff007a;
+    transition: 0.3s;
+    animation: pulse 1.5s infinite;
 }
 
 #btnSiguienteNivel:hover {
-    transform: scale(1.1);
+    background: #ff007a;
+    color: white;
 }
 
-/* Estilo para los textos informativos */
-.text-secondary {
-    font-weight: 500;
+/* Botón Reiniciar Estilizado */
+.btn-restart {
+    background: transparent;
+    color: #00f2ff;
+    border: 2px solid #00f2ff;
+    padding: 10px 25px;
+    font-weight: bold;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+}
+
+.btn-restart:hover {
+    background: #00f2ff;
+    color: #050505;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 10px #ff007a; }
+    50% { transform: scale(1.05); box-shadow: 0 0 25px #ff007a; }
+    100% { transform: scale(1); box-shadow: 0 0 10px #ff007a; }
 }
