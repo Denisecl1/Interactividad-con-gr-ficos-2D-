@@ -8,6 +8,10 @@ const ctx = canvas.getContext("2d");
 const contenedorBoton = document.getElementById("contenedorBotonNext");
 const btnNext = document.getElementById("btnSiguienteNivel");
 
+// --- CARGA DE AUDIOS ---
+const sonidoPop = new Audio('music/pop.mp3');
+const sonidoNext = new Audio('music/next.mp3'); // Asegúrate de tener este archivo
+
 canvas.width = 800;
 canvas.height = 600;
 
@@ -42,7 +46,6 @@ class Pelota {
         ctx.save();
         ctx.globalAlpha = this.opacity;
         
-        // Efecto de resplandor neón en la bolita
         ctx.shadowBlur = 15;
         ctx.shadowColor = this.color;
 
@@ -51,15 +54,13 @@ class Pelota {
         ctx.fillStyle = this.color;
         ctx.fill();
         
-        // Borde brillante
         ctx.strokeStyle = "white";
         ctx.lineWidth = 2;
         ctx.stroke();
         ctx.closePath();
 
-        // Número de la bolita
         ctx.fillStyle = "white";
-        ctx.shadowBlur = 0; // Quitar sombra para el texto
+        ctx.shadowBlur = 0; 
         ctx.font = "bold 14px 'Courier New'";
         ctx.textAlign = "center";
         ctx.fillText(this.numero, this.x, this.y + 5);
@@ -71,16 +72,14 @@ class Pelota {
         this.x += this.vx;
         this.y += this.vy;
 
-        // Rebote en paredes laterales
         if (this.x + this.radio > canvas.width || this.x - this.radio < 0) {
             this.vx *= -1;
         }
 
-        // Cambio de color al detectar mouse (mouseX, mouseY)
         const dx = mouseX - this.x;
         const dy = mouseY - this.y;
         if (Math.sqrt(dx*dx + dy*dy) < this.radio) {
-            this.color = "#ff007a"; // Cambia a rosa neón al pasar el mouse
+            this.color = "#ff007a"; 
         } else {
             this.color = this.colorOriginal;
         }
@@ -142,19 +141,30 @@ canvas.addEventListener("mousemove", (e) => {
     mouseY = e.clientY - rect.top;
 });
 
+// Evento para reventar burbujas (Sonido Pop)
 canvas.addEventListener("click", () => {
     if (pausadoParaSiguienteNivel) return;
     pelotas.forEach(p => {
         const dx = mouseX - p.x;
         const dy = mouseY - p.y;
         if (Math.sqrt(dx*dx + dy*dy) < p.radio && !p.estaDesapareciendo) {
+            
+            // Sonido al reventar
+            sonidoPop.currentTime = 0;
+            sonidoPop.play();
+
             p.estaDesapareciendo = true;
             eliminadosPorUsuario++;
         }
     });
 });
 
+// Evento para botón de siguiente nivel (Sonido Next)
 btnNext.onclick = function() {
+    // Sonido al avanzar de fase
+    sonidoNext.currentTime = 0;
+    sonidoNext.play();
+
     nivel++;
     contenedorBoton.style.display = "none";
     iniciarNivel(nivel);
@@ -163,7 +173,6 @@ btnNext.onclick = function() {
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // ACTUALIZACIÓN DE PANELES HTML (Mejora de Interfaz)
     document.getElementById("val-nivel").innerText = `${nivel} / 10`;
     document.getElementById("val-eliminados").innerText = `${eliminadosPorUsuario} / 100`;
     document.getElementById("val-progreso").innerText = `${((eliminadosPorUsuario / 100) * 100).toFixed(0)} %`;
@@ -186,12 +195,10 @@ function animate() {
             }
         }
     } else {
-        // Pantalla de pausa oscura tipo arcade
         ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Mensaje de fin de juego con estilo neón
     if (nivel === 10 && bolitasFinalizadasNivel === 10) {
         ctx.save();
         ctx.fillStyle = "#ff007a";
