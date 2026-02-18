@@ -165,3 +165,30 @@ h1 {
     50% { transform: scale(1.05); box-shadow: 0 0 25px #ff007a; }
     100% { transform: scale(1); box-shadow: 0 0 10px #ff007a; }
 }
+
+/* --- ESTILO DEL PIE DE PÁGINA --- */
+.footer-arcade {
+    padding: 30px 0;
+    color: #00f2ff; /* Color cian neón que ya usamos */
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.footer-line {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, transparent, #ff007a, transparent);
+    margin-bottom: 20px;
+}
+
+.text-neon-small {
+    font-size: 0.85rem;
+    text-shadow: 0 0 5px #00f2ff;
+    opacity: 0.8;
+}
+
+.copyright {
+    font-size: 0.75rem;
+    color: #ff007a; /* Rosa neón para el símbolo y año */
+    text-shadow: 0 0 5px #ff007a;
+    margin-top: 10px;
+}
