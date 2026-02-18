@@ -3,25 +3,56 @@
    AUTORA: Diana Denise Campos Lozano
    ========================================= */
 
+/* ====== FONDO GLOBAL ARCADE ====== */
 body {
-    background-color: #0b0e14; /* Fondo oscuro profundo */
+    background: radial-gradient(circle at center, #101826 0%, #05070d 60%, #000000 100%);
     color: #00f2ff;
     font-family: 'Courier New', Courier, monospace;
     display: flex;
     flex-direction: column;
     align-items: center;
     overflow-x: hidden;
+    min-height: 100vh;
+    margin: 0;
 }
 
+/* Glow ambiental futurista */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(0,242,255,0.15), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(255,0,122,0.12), transparent 45%);
+    pointer-events:none;
+    z-index:-1;
+}
+
+/* Quitar fondo blanco de Bootstrap */
+.container,
+.row {
+    background: transparent !important;
+}
+
+/* ====== TITULO ====== */
 h1 {
-    color: #ff007a;
+    color: #ffffff;
     font-weight: bold;
     letter-spacing: 5px;
-    text-shadow: 0 0 15px #ff007a;
     margin-bottom: 20px;
+    text-shadow:
+        0 0 5px #ffffff,
+        0 0 10px #ff007a,
+        0 0 20px #ff007a,
+        0 0 40px rgba(255,0,122,0.8);
+    animation: flicker 3s infinite alternate;
 }
 
-/* Paneles de estadísticas superiores */
+@keyframes flicker {
+    from { opacity: 0.85; }
+    to { opacity: 1; }
+}
+/* ====== PANELES SUPERIORES ====== */
 .stat-panel {
     background: rgba(0, 242, 255, 0.05);
     border: 2px solid #00f2ff;
@@ -30,27 +61,32 @@ h1 {
     font-weight: bold;
     font-size: 0.9rem;
     box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+    color: #ffffff !important;
+    text-shadow: 0 0 8px rgba(0, 242, 255, 0.8);
 }
 
+/* ====== CONTENEDOR CANVAS ====== */
 .canvas-wrapper {
     position: relative;
     display: inline-block;
     border-radius: 25px;
-    padding: 10px;
-    background: #0b0e14;
+    padding: 15px;
+    background: transparent;
 }
 
-/* ESTILO DEL CANVAS */
+/* ====== CANVAS ====== */
 #canvasColisiones {
     background-color: #050505;
     border: 4px solid #00f2ff;
     border-radius: 20px;
-    box-shadow: 0 0 25px rgba(0, 242, 255, 0.5), inset 0 0 15px rgba(0, 242, 255, 0.2);
-    cursor: url('https://cur.cursors-4u.net/games/gam-4/gam373.cur'), crosshair;
+    box-shadow:
+        0 0 25px rgba(0, 242, 255, 0.5),
+        inset 0 0 15px rgba(0, 242, 255, 0.2);
+    cursor: crosshair;
     display: block;
 }
 
-/* BOTÓN SIGUIENTE NIVEL FLOTANTE */
+/* ====== BOTÓN SIGUIENTE NIVEL ====== */
 #contenedorBotonNext {
     display: none;
     position: absolute;
@@ -79,22 +115,51 @@ h1 {
     color: white;
 }
 
-/* Botón Reiniciar Estilizado */
+/* ====== BOTÓN REINICIAR ====== */
 .btn-restart {
-    background: transparent;
-    color: #00f2ff;
+    background: #050505;              /* Fondo oscuro sólido */
+    color: #00f2ff !important;        /* Texto Cian Neón para mejor visibilidad */
     border: 2px solid #00f2ff;
-    padding: 10px 25px;
-    font-weight: bold;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+    padding: 12px 28px;
+    font-weight: 900;                 /* Aumentamos el grosor de la letra */
+    border-radius: 12px;
+    letter-spacing: 2px;
+    font-size: 1rem;
+    text-transform: uppercase;        /* Mayúsculas para estilo arcade */
+    cursor: pointer;
+
+    /* Sombra de texto para que las letras "brillen" un poco y resalten */
+    text-shadow: 0 0 5px #00f2ff;
+
+    /* Glow externo mejorado */
+    box-shadow: 
+        0 0 8px #00f2ff, 
+        inset 0 0 4px rgba(0, 242, 255, 0.4);
+
+    transition: all 0.25s ease;
+    display: inline-block;
+    position: relative;
+    z-index: 5;                       /* Asegura que esté por encima de otros fondos */
 }
 
+/* Hover neon: Invertimos los colores para máximo contraste */
 .btn-restart:hover {
     background: #00f2ff;
-    color: #050505;
+    color: #fdfdfd !important;        /* Texto oscuro sobre fondo brillante */
+    text-shadow: none;                /* Quitamos brillo interno en hover */
+    box-shadow: 
+        0 0 20px #00f2ff, 
+        0 0 40px rgba(0, 242, 255, 0.8);
+    transform: scale(1.06);
 }
 
+/* Click */
+.btn-restart:active {
+    transform: scale(0.95);
+    box-shadow: inset 0 0 15px #00f2ff;
+}
+
+/* ====== ANIMACIÓN PULSO ====== */
 @keyframes pulse {
     0% { transform: scale(1); box-shadow: 0 0 10px #ff007a; }
     50% { transform: scale(1.05); box-shadow: 0 0 25px #ff007a; }
