@@ -1,6 +1,7 @@
 /* =========================================
-   PROYECTO: Arcade Mode Futurista
-   AUTORA: Diana Denise Campos Lozano
+   PROYECTO: Arcade Mode Futurista Responsivo
+   AUTORA: Campos Lozano Diana Denise
+   CARRERA: Ingeniería en TIC | 9no Semestre
    ========================================= */
 
 /* ====== FONDO GLOBAL ARCADE ====== */
@@ -14,6 +15,7 @@ body {
     overflow-x: hidden;
     min-height: 100vh;
     margin: 0;
+    padding: 10px; /* Espacio para que no pegue a las orillas en el cel */
 }
 
 /* Glow ambiental futurista */
@@ -29,8 +31,7 @@ body::before{
 }
 
 /* Quitar fondo blanco de Bootstrap */
-.container,
-.row {
+.container, .row {
     background: transparent !important;
 }
 
@@ -38,40 +39,45 @@ body::before{
 h1 {
     color: #ffffff;
     font-weight: bold;
-    letter-spacing: 5px;
+    letter-spacing: 2px;
     margin-bottom: 20px;
     text-shadow:
         0 0 5px #ffffff,
         0 0 10px #ff007a,
-        0 0 20px #ff007a,
-        0 0 40px rgba(255,0,122,0.8);
+        0 0 20px #ff007a;
     animation: flicker 3s infinite alternate;
+    font-size: 1.8rem; /* Tamaño responsivo inicial */
+    text-align: center;
 }
 
 @keyframes flicker {
     from { opacity: 0.85; }
     to { opacity: 1; }
 }
+
 /* ====== PANELES SUPERIORES ====== */
 .stat-panel {
     background: rgba(0, 242, 255, 0.05);
     border: 2px solid #00f2ff;
     border-radius: 10px;
-    padding: 10px;
+    padding: 8px;
     font-weight: bold;
-    font-size: 0.9rem;
+    font-size: 0.7rem; /* Más chico para que quepan los 3 en el cel */
     box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
     color: #ffffff !important;
     text-shadow: 0 0 8px rgba(0, 242, 255, 0.8);
+    text-align: center;
 }
 
-/* ====== CONTENEDOR CANVAS ====== */
+/* ====== CONTENEDOR CANVAS RESPONSIVO ====== */
 .canvas-wrapper {
     position: relative;
     display: inline-block;
     border-radius: 25px;
-    padding: 15px;
+    padding: 5px; /* Menos padding en móvil */
     background: transparent;
+    width: 100%;
+    max-width: 800px;
 }
 
 /* ====== CANVAS ====== */
@@ -82,8 +88,22 @@ h1 {
     box-shadow:
         0 0 25px rgba(0, 242, 255, 0.5),
         inset 0 0 15px rgba(0, 242, 255, 0.2);
-    cursor: crosshair;
+    
+    /* MAGIA PARA EL CELULAR */
+    width: 100%;       
+    height: auto;      
     display: block;
+    margin: 0 auto;
+
+    /* MIRA PERSONALIZADA */
+    cursor: url('https://cur.cursors-4u.net/games/gam-4/gam373.cur'), crosshair;
+}
+
+/* NIVEL 10 - MODO JEFE (Efecto Dorado) */
+.nivel-final {
+    border-color: #ffcc00 !important;
+    box-shadow: 0 0 30px #ffcc00, inset 0 0 15px #ffcc00 !important;
+    cursor: url('https://cur.cursors-4u.net/games/gam-13/gam1210.cur'), pointer !important;
 }
 
 /* ====== BOTÓN SIGUIENTE NIVEL ====== */
@@ -94,15 +114,17 @@ h1 {
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10;
+    width: 80%; /* Ancho controlado para móvil */
+    text-align: center;
 }
 
 #btnSiguienteNivel {
     background: #050505;
     color: #ff007a;
     border: 3px solid #ff007a;
-    padding: 20px 40px;
+    padding: 15px 25px;
     font-family: 'Courier New', Courier, monospace;
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: bold;
     border-radius: 15px;
     box-shadow: 0 0 20px #ff007a;
@@ -117,60 +139,41 @@ h1 {
 
 /* ====== BOTÓN REINICIAR ====== */
 .btn-restart {
-    background: #050505;              /* Fondo oscuro sólido */
-    color: #00f2ff !important;        /* Texto Cian Neón para mejor visibilidad */
+    background: #050505;
+    color: #00f2ff !important;
     border: 2px solid #00f2ff;
     padding: 12px 28px;
-    font-weight: 900;                 /* Aumentamos el grosor de la letra */
+    font-weight: 900;
     border-radius: 12px;
     letter-spacing: 2px;
-    font-size: 1rem;
-    text-transform: uppercase;        /* Mayúsculas para estilo arcade */
+    font-size: 0.9rem;
+    text-transform: uppercase;
     cursor: pointer;
-
-    /* Sombra de texto para que las letras "brillen" un poco y resalten */
     text-shadow: 0 0 5px #00f2ff;
-
-    /* Glow externo mejorado */
-    box-shadow: 
-        0 0 8px #00f2ff, 
-        inset 0 0 4px rgba(0, 242, 255, 0.4);
-
+    box-shadow: 0 0 8px #00f2ff;
     transition: all 0.25s ease;
-    display: inline-block;
-    position: relative;
-    z-index: 5;                       /* Asegura que esté por encima de otros fondos */
+    margin-top: 15px;
 }
 
-/* Hover neon: Invertimos los colores para máximo contraste */
 .btn-restart:hover {
     background: #00f2ff;
-    color: #fdfdfd !important;        /* Texto oscuro sobre fondo brillante */
-    text-shadow: none;                /* Quitamos brillo interno en hover */
-    box-shadow: 
-        0 0 20px #00f2ff, 
-        0 0 40px rgba(0, 242, 255, 0.8);
-    transform: scale(1.06);
+    color: #050505 !important;
 }
 
-/* Click */
-.btn-restart:active {
-    transform: scale(0.95);
-    box-shadow: inset 0 0 15px #00f2ff;
+/* --- AJUSTES PARA PANTALLAS GRANDES (LAPTOP) --- */
+@media (min-width: 768px) {
+    h1 { font-size: 3rem; letter-spacing: 5px; }
+    .stat-panel { font-size: 1rem; padding: 10px; }
+    .btn-restart { font-size: 1rem; }
+    #btnSiguienteNivel { font-size: 1.2rem; padding: 20px 40px; }
 }
 
-/* ====== ANIMACIÓN PULSO ====== */
-@keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 10px #ff007a; }
-    50% { transform: scale(1.05); box-shadow: 0 0 25px #ff007a; }
-    100% { transform: scale(1); box-shadow: 0 0 10px #ff007a; }
-}
-
-/* --- ESTILO DEL PIE DE PÁGINA --- */
+/* --- PIE DE PÁGINA --- */
 .footer-arcade {
     padding: 30px 0;
-    color: #00f2ff; /* Color cian neón que ya usamos */
+    color: #00f2ff;
     font-family: 'Courier New', Courier, monospace;
+    width: 100%;
 }
 
 .footer-line {
@@ -188,7 +191,13 @@ h1 {
 
 .copyright {
     font-size: 0.75rem;
-    color: #ff007a; /* Rosa neón para el símbolo y año */
+    color: #ff007a;
     text-shadow: 0 0 5px #ff007a;
     margin-top: 10px;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 10px #ff007a; }
+    50% { transform: scale(1.05); box-shadow: 0 0 25px #ff007a; }
+    100% { transform: scale(1); box-shadow: 0 0 10px #ff007a; }
 }

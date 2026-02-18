@@ -1,6 +1,6 @@
 /**
- * Proyecto: Simulación de Colisiones 2D - ARCADE MODE
- * Autora: Diana Denise Campos Lozano
+ * Proyecto: Simulación de Colisiones 2D Responsivo
+ * Autora: Diana Denise Campos Lozano - 9no Semestre
  */
 
 const canvas = document.getElementById("canvasColisiones");
@@ -8,10 +8,9 @@ const ctx = canvas.getContext("2d");
 const contenedorBoton = document.getElementById("contenedorBotonNext");
 const btnNext = document.getElementById("btnSiguienteNivel");
 
-// --- CARGA DE AUDIOS ---
-// Asegúrate de que los archivos estén en la carpeta 'music'
+// CARGA DE AUDIOS
 const sonidoPop = new Audio('music/pop.mp3');
-const sonidoNext = new Audio('music/next.mp3'); 
+const sonidoNext = new Audio('music/next.mp3');
 
 canvas.width = 800;
 canvas.height = 600;
@@ -24,21 +23,15 @@ let pausadoParaSiguienteNivel = false;
 
 const MAX_NIVELES = 10;
 const BOLITAS_POR_NIVEL = 10;
-let mouseX = 0, mouseY = 0;
 
 class Pelota {
     constructor(numero, nivelActual) {
         this.numero = numero;
         this.radio = 20;
-        // Inician fuera del canvas por la parte inferior
         this.x = Math.random() * (canvas.width - this.radio * 2) + this.radio;
         this.y = canvas.height + this.radio;
-        
-        // La velocidad aumenta gradualmente con cada nivel
         this.vx = (Math.random() - 0.5) * 6; 
         this.vy = -(Math.random() * 1.5 + (nivelActual * 1.2)); 
-        
-        // Nivel 10 usa color dorado, niveles anteriores usan cian neón
         this.colorOriginal = (nivelActual === 10) ? "#d4af37" : "#00f2ff";
         this.color = this.colorOriginal;
         this.opacity = 1;
@@ -49,202 +42,127 @@ class Pelota {
     dibujar() {
         ctx.save();
         ctx.globalAlpha = this.opacity;
-        
-        // Brillo Neón
         ctx.shadowBlur = 15;
         ctx.shadowColor = this.color;
-
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radio, 0, Math.PI * 2);
         ctx.fillStyle = this.color;
         ctx.fill();
-        
         ctx.strokeStyle = "white";
         ctx.lineWidth = 2;
         ctx.stroke();
-        ctx.closePath();
-
-        // Número de la bolita
-        ctx.fillStyle = "white";
-        ctx.shadowBlur = 0; 
         ctx.font = "bold 14px 'Courier New'";
         ctx.textAlign = "center";
+        ctx.fillStyle = "white";
+        ctx.shadowBlur = 0;
         ctx.fillText(this.numero, this.x, this.y + 5);
-        
         ctx.restore();
     }
 
     actualizar() {
         this.x += this.vx;
         this.y += this.vy;
-
-        // Rebote en paredes laterales
-        if (this.x + this.radio > canvas.width || this.x - this.radio < 0) {
-            this.vx *= -1;
-        }
-
-        // Cambio de color al detectar mouse (hover)
-        const dx = mouseX - this.x;
-        const dy = mouseY - this.y;
-        if (Math.sqrt(dx*dx + dy*dy) < this.radio) {
-            this.color = "#ff007a"; // Rosa neón
-        } else {
-            this.color = this.colorOriginal;
-        }
-
-        // Desvanecimiento al hacer clic
+        if (this.x + this.radio > canvas.width || this.x - this.radio < 0) this.vx *= -1;
         if (this.estaDesapareciendo) {
             this.opacity -= 0.05;
             if (this.opacity <= 0) this.marcadaParaEliminar = true;
         }
-
-        // Marcar para eliminar si sale por arriba
-        if (this.y + this.radio < 0) {
-            this.marcadaParaEliminar = true;
-        }
+        if (this.y + this.radio < 0) this.marcadaParaEliminar = true;
     }
 }
 
 function detectarColisiones() {
     for (let i = 0; i < pelotas.length; i++) {
         for (let j = i + 1; j < pelotas.length; j++) {
-            let p1 = pelotas[i];
-            let p2 = pelotas[j];
-            let dx = p2.x - p1.x;
-            let dy = p2.y - p1.y;
-            let distancia = Math.sqrt(dx * dx + dy * dy);
-            let distanciaMinima = p1.radio + p2.radio;
-
-            if (distancia < distanciaMinima) {
-                // Separación física para evitar solapamiento
-                let superposicion = distanciaMinima - distancia;
-                let nx = dx / distancia;
-                let ny = dy / distancia;
-                
-                p1.x -= nx * (superposicion / 2);
-                p1.y -= ny * (superposicion / 2);
-                p2.x += nx * (superposicion / 2);
-                p2.y += ny * (superposicion / 2);
-
-                // Rebote (Intercambio de velocidad)
-                [p1.vx, p2.vx] = [p2.vx, p1.vx];
-                [p1.vy, p2.vy] = [p2.vy, p1.vy];
+            let p1 = pelotas[i], p2 = pelotas[j];
+            let dx = p2.x - p1.x, dy = p2.y - p1.y;
+            let dist = Math.sqrt(dx * dx + dy * dy);
+            let minDist = p1.radio + p2.radio;
+            if (dist < minDist) {
+                let overlap = minDist - dist;
+                let nx = dx / dist, ny = dy / dist;
+                p1.x -= nx * (overlap / 2); p1.y -= ny * (overlap / 2);
+                p2.x += nx * (overlap / 2); p2.y += ny * (overlap / 2);
+                [p1.vx, p2.vx] = [p2.vx, p1.vx]; [p1.vy, p2.vy] = [p2.vy, p1.vy];
             }
         }
     }
 }
 
-function iniciarNivel(n) {
-    if (n > MAX_NIVELES) return;
-    
-    pausadoParaSiguienteNivel = false;
-    bolitasFinalizadasNivel = 0;
-    pelotas = [];
-    
-    // Activar estilo dorado en el CSS si es el nivel final
-    if (n === 10) canvas.classList.add("nivel-final");
-
-    for (let i = 1; i <= BOLITAS_POR_NIVEL; i++) {
-        setTimeout(() => {
-            let numReal = ((n - 1) * BOLITAS_POR_NIVEL) + i;
-            pelotas.push(new Pelota(numReal, n));
-        }, i * 600); 
-    }
-}
-
-// --- LISTENERS ---
-
-canvas.addEventListener("mousemove", (e) => {
-    const rect = canvas.getBoundingClientRect();
-    mouseX = e.clientX - rect.left;
-    mouseY = e.clientY - rect.top;
-});
-
-canvas.addEventListener("click", () => {
+// MANEJO DE CLIC RESPONSIVO
+canvas.addEventListener("click", (e) => {
     if (pausadoParaSiguienteNivel) return;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const clickX = (e.clientX - rect.left) * scaleX;
+    const clickY = (e.clientY - rect.top) * scaleY;
+
     pelotas.forEach(p => {
-        const dx = mouseX - p.x;
-        const dy = mouseY - p.y;
+        const dx = clickX - p.x, dy = clickY - p.y;
         if (Math.sqrt(dx*dx + dy*dy) < p.radio && !p.estaDesapareciendo) {
-            // Sonido al reventar burbuja
             sonidoPop.currentTime = 0;
             sonidoPop.play();
-
             p.estaDesapareciendo = true;
             eliminadosPorUsuario++;
         }
     });
 });
 
-btnNext.onclick = function() {
-    // Sonido al avanzar de fase
+btnNext.onclick = () => {
     sonidoNext.currentTime = 0;
     sonidoNext.play();
-
     nivel++;
     contenedorBoton.style.display = "none";
     iniciarNivel(nivel);
 };
 
-/**
- * Función para el botón de Reiniciar en el HTML
- */
 function reiniciarJuego() {
     sonidoNext.currentTime = 0;
     sonidoNext.play();
-    setTimeout(() => {
-        location.reload();
-    }, 200); 
+    setTimeout(() => location.reload(), 200);
+}
+
+function iniciarNivel(n) {
+    pausadoParaSiguienteNivel = false;
+    bolitasFinalizadasNivel = 0;
+    pelotas = [];
+    if (n === 10) canvas.classList.add("nivel-final");
+    for (let i = 1; i <= BOLITAS_POR_NIVEL; i++) {
+        setTimeout(() => {
+            pelotas.push(new Pelota(((n - 1) * 10) + i, n));
+        }, i * 600);
+    }
 }
 
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Actualización de paneles de estadísticas en el HTML
-    document.getElementById("val-nivel").innerText = `${nivel} / 10`;
-    document.getElementById("val-eliminados").innerText = `${eliminadosPorUsuario} / 100`;
-    document.getElementById("val-progreso").innerText = `${((eliminadosPorUsuario / 100) * 100).toFixed(0)} %`;
+    document.getElementById("val-nivel").innerText = `${nivel}/10`;
+    document.getElementById("val-eliminados").innerText = `${eliminadosPorUsuario}/100`;
+    document.getElementById("val-progreso").innerText = `${((eliminadosPorUsuario / 100) * 100).toFixed(0)}%`;
 
     if (!pausadoParaSiguienteNivel) {
         detectarColisiones();
         for (let i = pelotas.length - 1; i >= 0; i--) {
-            let p = pelotas[i];
-            p.actualizar();
-            p.dibujar();
-            
-            if (p.marcadaParaEliminar) {
+            pelotas[i].actualizar();
+            pelotas[i].dibujar();
+            if (pelotas[i].marcadaParaEliminar) {
                 pelotas.splice(i, 1);
                 bolitasFinalizadasNivel++;
-                
-                if (bolitasFinalizadasNivel === BOLITAS_POR_NIVEL) {
-                    if (nivel < MAX_NIVELES) {
-                        pausadoParaSiguienteNivel = true;
-                        contenedorBoton.style.display = "block";
-                    }
+                if (bolitasFinalizadasNivel === 10 && nivel < 10) {
+                    pausadoParaSiguienteNivel = true;
+                    contenedorBoton.style.display = "block";
                 }
             }
         }
-    } else {
-        // Pausa visual entre niveles
-        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
-
-    // Pantalla de Victoria Final
     if (nivel === 10 && bolitasFinalizadasNivel === 10) {
-        ctx.save();
-        ctx.fillStyle = "#ff007a";
-        ctx.font = "bold 40px 'Courier New'";
-        ctx.textAlign = "center";
-        ctx.shadowBlur = 20;
-        ctx.shadowColor = "#ff007a";
-        ctx.fillText("¡SISTEMA COMPLETADO!", canvas.width/2, canvas.height/2);
-        ctx.restore();
+        ctx.fillStyle = "#ff007a"; ctx.font = "bold 40px Courier"; ctx.textAlign = "center";
+        ctx.fillText("SISTEMA COMPLETADO", canvas.width/2, canvas.height/2);
         return;
     }
     requestAnimationFrame(animate);
 }
 
-// Iniciar Juego
 iniciarNivel(nivel);
 animate();
